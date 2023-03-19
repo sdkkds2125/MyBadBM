@@ -11,6 +11,14 @@ plugins {
     id 'java-library'
 }
 
+//sourceSets {
+//    main {
+//        java {//project.getLayout().getBuildDirectory().dir("classes/${sourceSets.main.name}/java")
+//            destinationDirectory.value(project.get)
+//        }
+//    }
+//}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()

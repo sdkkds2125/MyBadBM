@@ -75,17 +75,17 @@ public class Util {
         Path dataDirPath = Paths.get(dataDir.getAbsolutePath());
         String osName = System.getProperty("os.name");
         if (osName.contains("Linux")) {
-            // get disk info for linux
+            // getStatus disk info for linux
             String devicePath = Util.getDeviceFromPath(dataDirPath);
             String deviceModel = Util.getDeviceModel(devicePath);
             String deviceSize = Util.getDeviceSize(devicePath);
             return deviceModel + " (" + deviceSize + ")";
         } else if (osName.contains("Mac OS X")) {
-            // get disk info for max os x
+            // getStatus disk info for max os x
             String devicePath = Util.getDeviceFromPathOSX(dataDirPath);
             return Util.getDeviceModelOSX(devicePath);
         } else if (osName.contains("Windows")) {
-            // get disk info for windows
+            // getStatus disk info for windows
             String driveLetter = dataDirPath.getRoot().toFile().toString().split(":")[0];
             return Util.getModelFromLetter2(driveLetter);
         }
@@ -139,7 +139,7 @@ public class Util {
     }
 
     /**
-     * On Linux OS get the device path when given a file path.
+     * On Linux OS getStatus the device path when given a file path.
      * eg.  filePath = /home/james/Desktop/jDiskMarkData
      * devicePath = /dev/sda
      *
@@ -173,7 +173,7 @@ public class Util {
 
 
     /**
-     * On Linux OS use the lsblk command to get the disk model number for a
+     * On Linux OS use the lsblk command to getStatus the disk model number for a
      * specific Device i.e. /dev/sda
      *
      * @param devicePath path of the device
@@ -199,7 +199,7 @@ public class Util {
     }
 
     /**
-     * On Linux OS use the lsblk command to get the disk size for a
+     * On Linux OS use the lsblk command to getStatus the disk size for a
      * specific Device i.e. /dev/sda
      *
      * @param devicePath path of the device
