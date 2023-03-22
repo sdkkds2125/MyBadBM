@@ -32,3 +32,4 @@ jdm.properties
 
 # Ignore Gradle build output directory
 build
+lib/src/main/java/edu/touro/mco152/bm/OtherUIImplementation.java

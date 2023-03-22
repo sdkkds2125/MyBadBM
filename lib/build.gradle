@@ -5,6 +5,8 @@
  * For more details take a look at the 'Building Java & JVM projects' chapter in the Gradle
  * User Manual available at https://docs.gradle.org/8.0.1/userguide/building_java_projects.html
  */
+import org.gradle.api.Project
+import org.gradle.api.file.ProjectLayout
 
 plugins {
     // Apply the java-library plugin for API and implementation separation.
@@ -13,8 +15,9 @@ plugins {
 
 //sourceSets {
 //    main {
-//        java {//project.getLayout().getBuildDirectory().dir("classes/${sourceSets.main.name}/java")
-//            destinationDirectory.value(project.get)
+//        java {//project getLayout().getBuildDirectory().dir("classes/${sourceSets.main.name}/java")
+//
+//            destinationDirectory.dir("classes/${sourceSets.main.name}/java")
 //        }
 //    }
 //}

@@ -1,12 +1,18 @@
 package edu;
 
-import edu.touro.mco152.bm.App;
+import edu.touro.mco152.bm.*;
+import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.ui.Gui;
 import edu.touro.mco152.bm.ui.MainFrame;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UITest {
 
@@ -15,8 +21,7 @@ public class UITest {
      *
      * @author lcmcohen
      */
-    private void setupDefaultAsPerProperties()
-    {
+    private void setupDefaultAsPerProperties() {
         /// Do the minimum of what  App.init() would do to allow to run.
         Gui.mainFrame = new MainFrame();
         App.p = new Properties();
@@ -29,7 +34,7 @@ public class UITest {
 
         // code from startBenchmark
         //4. create data dir reference
-        App.dataDir = new File(App.locationDir.getAbsolutePath()+File.separator+App.DATADIRNAME);
+        App.dataDir = new File(App.locationDir.getAbsolutePath() + File.separator + App.DATADIRNAME);
 
         //5. remove existing test data if exist
         if (App.dataDir.exists()) {
@@ -38,15 +43,56 @@ public class UITest {
             } else {
                 App.msg("unable to remove existing data dir");
             }
-        }
-        else
-        {
+        } else {
             App.dataDir.mkdirs(); // create data dir if not already present
+        }
+    }
+    DiskWorker worker = new DiskWorker(new NonSwingUI());
+    NonSwingUI currentUI = (NonSwingUI) worker.getUi();
+
+    @Test
+    void progressTest() throws Exception {
+        //Arrange
+        setupDefaultAsPerProperties();
+        currentUI.benchmarkWork();
+        ArrayList<Integer> intermediateResults = currentUI.getProgresses();
+        //Act
+        for (Integer num : intermediateResults) {
+            //Assert
+            assertTrue(num >= 0 && num <= 100);
         }
     }
 
     @Test
-    void progressTest(){
+    void finishedTest(){
+        //Arrange
+        setupDefaultAsPerProperties();
+        currentUI.benchmarkWork();
+        //assert
+        assertTrue(currentUI.getMethodResult());
+    }
+
+    @Test
+    void diskRunDataTest(){
+        //Arrange
+        ArrayList<Long> appInfo = PersonalDataLog.getAppInfo();
+        ArrayList<Long> diskRunInfo = PersonalDataLog.getDiskRunInfo();
+        String utilDiskInfoFile = PersonalDataLog.getUtilDiskInfoFile();
+        String diskRunInfoFile = PersonalDataLog.getDiskRunInfoFile();
+        setupDefaultAsPerProperties();
+        currentUI.benchmarkWork();
+        //Act
+
+        //Assert
+        assertEquals(utilDiskInfoFile,diskRunInfoFile);
+        for (int i = 0; i < appInfo.size(); i++) {
+            assertEquals(appInfo.get(i),diskRunInfo.get(i)); //since I added them in the same places in both lists
+        }
+        assertTrue(PersonalDataLog.getRun().getRunMax() < 7500);
+        assertTrue(PersonalDataLog.getRun().getRunMin() > 0);
+        assertTrue(PersonalDataLog.getRun().getRunAvg() < 6000);
+
+
 
     }
 }
