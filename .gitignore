@@ -26,3 +26,10 @@ gradle/wrapper
 
 #ignore changes to the apps properties file
 jdm.properties
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+lib/src/main/java/edu/touro/mco152/bm/OtherUIImplementation.java
