@@ -10,6 +10,7 @@ import java.util.concurrent.*;
 import java.util.logging.Logger;
 //import sun.swing.AccumulativeRunnable;
 
+import static edu.touro.mco152.bm.App.blockSequence;
 import static edu.touro.mco152.bm.App.dataDir;
 
 public class OtherUIImplementation implements UIInterface<DiskMark, Boolean>{

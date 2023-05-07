@@ -205,7 +205,7 @@ public class DiskWorker {
              */
                     EntityManager em = EM.getEntityManager();
                     em.getTransaction().begin();
-                    //em.persist(run);
+                    em.persist(run);
                     em.getTransaction().commit();
 
                     Gui.runPanel.addRun(run);
@@ -309,7 +309,7 @@ public class DiskWorker {
              */
                     EntityManager em = EM.getEntityManager();
                     em.getTransaction().begin();
-                  //  em.persist(run);
+                    em.persist(run);
                     em.getTransaction().commit();
 
                     Gui.runPanel.addRun(run);

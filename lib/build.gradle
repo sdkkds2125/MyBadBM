@@ -13,14 +13,6 @@ plugins {
     id 'java-library'
 }
 
-//sourceSets {
-//    main {
-//        java {//project getLayout().getBuildDirectory().dir("classes/${sourceSets.main.name}/java")
-//
-//            destinationDirectory.dir("classes/${sourceSets.main.name}/java")
-//        }
-//    }
-//}
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -65,3 +57,12 @@ tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+sourceSets{
+    main {
+        output.resourcesDir = sourceSets.main.output.classesDirs.asPath
+        compileJava.dependsOn(processResources)
+    }
+}
+
+
