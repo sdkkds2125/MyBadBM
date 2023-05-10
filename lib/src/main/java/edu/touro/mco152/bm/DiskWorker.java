@@ -1,5 +1,6 @@
 package edu.touro.mco152.bm;
 
+import edu.touro.mco152.bm.Commands.Executor;
 import edu.touro.mco152.bm.Commands.ReadCmd;
 import edu.touro.mco152.bm.Commands.WriteCmd;
 import edu.touro.mco152.bm.persist.DiskRun;
@@ -44,7 +45,7 @@ public class DiskWorker {
 
     Boolean lastStatus = null;  // so far unknown
     UIInterface<DiskMark, Boolean> ui;
-
+    Executor executor = new Executor();
 
     public DiskWorker(UIInterface<DiskMark, Boolean> ui) {
         this.ui = ui;
@@ -78,8 +79,7 @@ public class DiskWorker {
           The GUI allows a Write, Read, or both types of BMs to be started. They are done serially.
          */
                 if (App.writeTest) {
-                    WriteCmd w = new WriteCmd(ui,25,32,512, DiskRun.BlockSequence.SEQUENTIAL);
-                    w.execute();
+                    executor.executeCommand(new WriteCmd(ui,25,32,512, DiskRun.BlockSequence.SEQUENTIAL));
                 }
 
         /*
@@ -102,8 +102,7 @@ public class DiskWorker {
 
                 // Same as above, just for Read operations instead of Writes.
                 if (App.readTest) {
-                    ReadCmd r = new ReadCmd(ui,25,32,512, DiskRun.BlockSequence.SEQUENTIAL);
-                    r.execute();
+                    executor.executeCommand(new ReadCmd(ui,25,32,512, DiskRun.BlockSequence.SEQUENTIAL));
                 }
                 App.nextMarkNumber += App.numOfMarks;
                 return true;
