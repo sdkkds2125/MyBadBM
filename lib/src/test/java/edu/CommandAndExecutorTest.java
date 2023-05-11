@@ -19,6 +19,9 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * This is used to test the commands and the Executor directly without using App or DiskWorker directly
+ */
 public class CommandAndExecutorTest {
     @BeforeAll
     public static void setupDefaultAsPerProperties() {
@@ -52,23 +55,25 @@ public class CommandAndExecutorTest {
 
     @Test
     void readCmdTest(){
-        executor.executeCommand(new ReadCmd(currentUI,25,128,2048, DiskRun.BlockSequence.SEQUENTIAL));
+        boolean result = executor.executeCommand(new ReadCmd(currentUI,25,128,2048, DiskRun.BlockSequence.SEQUENTIAL));
         ArrayList<Integer> intermediateResults = currentUI.getProgresses();
         //Act
         for (Integer num : intermediateResults) {
             //Assert
             assertTrue(num >= 0 && num <= 100);
         }
+        assertTrue(result);
     }
 
     @Test
     void writeCmdTest(){
-        executor.executeCommand(new WriteCmd(currentUI,25,128,2048, DiskRun.BlockSequence.SEQUENTIAL));
+        boolean result = executor.executeCommand(new WriteCmd(currentUI,25,128,2048, DiskRun.BlockSequence.SEQUENTIAL));
         ArrayList<Integer> intermediateResults = currentUI.getProgresses();
         //Act
         for (Integer num : intermediateResults) {
             //Assert
             assertTrue(num >= 0 && num <= 100);
         }
+        assertTrue(result);
     }
 }

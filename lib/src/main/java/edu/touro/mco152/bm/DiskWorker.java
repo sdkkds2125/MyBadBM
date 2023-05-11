@@ -38,6 +38,8 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.WRITE;
  * This class only knows how to do 'read' or 'write' disk benchmarks. It is instantiated by the
  * startBenchmark() method.
  * <p>
+ * This class uses commands executed by an Invoker to do the actual reading and writing using the public values from App
+ * <p>
  */
 
 public class DiskWorker {

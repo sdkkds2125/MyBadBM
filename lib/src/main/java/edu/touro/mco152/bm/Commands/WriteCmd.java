@@ -17,6 +17,10 @@ import static edu.touro.mco152.bm.App.*;
 import static edu.touro.mco152.bm.App.msg;
 import static edu.touro.mco152.bm.DiskMark.MarkType.WRITE;
 
+/**
+ * This class is a command as it implements the Command Interface, and it does the write part of the Benchmark process
+ * using the data passed into the constructor
+ */
 public class WriteCmd implements CommandInterface {
     private int numOfBlocks;
     private int numOfMarks;
@@ -34,6 +38,14 @@ public class WriteCmd implements CommandInterface {
     private DiskMark wMark;
     private int startFileNum;
 
+    /**
+     *
+     * @param ui - the instance of the UIInterface that you are using to run the benchmark
+     * @param numOFMarks - the number of Marks wanted
+     * @param numOfBlocks - desired number of blocks
+     * @param blockSizeKb - the size of each block in kbs
+     * @param sequence - how
+     */
     public WriteCmd(UIInterface<DiskMark, Boolean> ui, int numOFMarks, int numOfBlocks, int blockSizeKb, DiskRun.BlockSequence sequence) {
         this.numOfMarks = numOFMarks;
         this.ui = ui;
@@ -62,7 +74,7 @@ public class WriteCmd implements CommandInterface {
     }
 
     @Override
-    public void execute() {
+    public boolean execute() {
         // sending the data to my personal logger to use for testing
         myDataLogger.addToAppInfo((long) numOfMarks);
         myDataLogger.addToAppInfo((long) numOfBlocks);
@@ -178,7 +190,7 @@ public class WriteCmd implements CommandInterface {
         em.getTransaction().commit();
 
         Gui.runPanel.addRun(run);
-
+        return true;
     }
 
 

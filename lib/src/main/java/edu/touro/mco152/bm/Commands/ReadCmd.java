@@ -14,7 +14,10 @@ import java.util.Date;
 import static edu.touro.mco152.bm.App.*;
 import static edu.touro.mco152.bm.App.msg;
 import static edu.touro.mco152.bm.DiskMark.MarkType.READ;
-
+/**
+ * This class is a command as it implements the Command Interface, and it does the Read part of the Benchmark process
+ * using the data passed into the constructor
+ */
 public class ReadCmd implements CommandInterface {
     private int numOfBlocks;
     private int numOfMarks;
@@ -61,7 +64,7 @@ public class ReadCmd implements CommandInterface {
 
 
     @Override
-    public void execute() {
+    public boolean execute() {
 
         // sending the data to my personal logger to use for testing
         myDataLogger.addToAppInfo((long) numOfMarks);
@@ -145,6 +148,6 @@ public class ReadCmd implements CommandInterface {
         em.getTransaction().commit();
 
         Gui.runPanel.addRun(run);
-
+        return true;
     }
 }
