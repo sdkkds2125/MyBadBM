@@ -17,7 +17,10 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-
+/**
+Tests that an observer is actually called.
+Should be used in conjunction with the other tests since it doesn't actually test the functionality of the benchmark
+ */
 public class ObserverTest {
     @BeforeAll
     public static void setupDefaultAsPerProperties() {

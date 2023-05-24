@@ -144,7 +144,7 @@ public final class Gui implements Observer {
     }
 
 
-    /*
+    /**
       Adds the information from a Read/Write run to the GUI panel runPanel
      */
     @Override

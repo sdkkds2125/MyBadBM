@@ -3,7 +3,7 @@ package edu.touro.mco152.bm.Slack;
 import edu.touro.mco152.bm.observers.Observer;
 import edu.touro.mco152.bm.persist.DiskRun;
 
-/*
+/**
  This class is an observer that will send a slack message when notified
  and the conditions put forth by the meetsRules method are met
  */
@@ -17,7 +17,7 @@ public class SlackObserver implements Observer {
         }
     }
 
-    /*
+    /**
     Sends a slack message
      */
     private void sendMessage() {
@@ -29,7 +29,7 @@ public class SlackObserver implements Observer {
         return isPercentOfMaxOverAverage3(run)  && (run.getIoMode() == DiskRun.IOMode.READ);
     }
 
-    /*
+    /**
     Checks if the max run is more than 3% of the run avg
      */
     private boolean isPercentOfMaxOverAverage3(DiskRun run) {

@@ -115,7 +115,7 @@ public class WriteCmd implements CommandInterface, Observable {
             testFile = new File(dataDir.getAbsolutePath() + File.separator + "testdata.jdm");
         }
 
-            /*
+            /**
               Begin an outer loop for specified duration (number of 'marks') of benchmark,
               that keeps writing data (in its own loop - for specified # of blocks). Each 'Mark' is timed
               and is reported to the GUI for display as each Mark completes.
