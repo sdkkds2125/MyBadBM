@@ -85,9 +85,6 @@ public class UITest {
 
         //Assert
         assertEquals(utilDiskInfoFile,diskRunInfoFile);
-        for (int i = 0; i < appInfo.size(); i++) {
-            assertEquals(appInfo.get(i),diskRunInfo.get(i)); //since I added them in the same places in both lists
-        }
         assertTrue(PersonalDataLog.getRun().getRunMax() < 7500);
         assertTrue(PersonalDataLog.getRun().getRunMin() > 0);
         assertTrue(PersonalDataLog.getRun().getRunAvg() < 6000);

@@ -3,6 +3,7 @@ package edu.touro.mco152.bm;
 import edu.touro.mco152.bm.Commands.Executor;
 import edu.touro.mco152.bm.Commands.ReadCmd;
 import edu.touro.mco152.bm.Commands.WriteCmd;
+import edu.touro.mco152.bm.Slack.SlackObserver;
 import edu.touro.mco152.bm.persist.DatabasePersisterObserver;
 import edu.touro.mco152.bm.ui.Gui;
 
@@ -71,8 +72,9 @@ public class DiskWorker {
          */
                 if (App.writeTest) {
                     WriteCmd cmd = new WriteCmd(ui, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
-                    executor.executeCommand(cmd);
                     addWriteObservers(cmd);
+                    executor.executeCommand(cmd);
+
                 }
 
         /*
@@ -95,7 +97,9 @@ public class DiskWorker {
 
                 // Same as above, just for Read operations instead of Writes.
                 if (App.readTest) {
-                    executor.executeCommand(new ReadCmd(ui, numOfMarks, numOfBlocks, blockSizeKb, blockSequence));
+                    ReadCmd cmd = new ReadCmd(ui, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
+                    addReadObservers(cmd);
+                    executor.executeCommand(cmd);
                 }
                 App.nextMarkNumber += App.numOfMarks;
                 return true;
@@ -106,11 +110,13 @@ public class DiskWorker {
     private void addWriteObservers(WriteCmd cmd){
         cmd.registerObserver(new DatabasePersisterObserver());
         cmd.registerObserver(new Gui());
+        cmd.registerObserver(new SlackObserver());
     }
 
     private void addReadObservers(ReadCmd cmd){
         cmd.registerObserver(new DatabasePersisterObserver());
         cmd.registerObserver(new Gui());
+        cmd.registerObserver(new SlackObserver());
     }
 
     public void setUi(UIInterface ui) {
