@@ -29,6 +29,9 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:31.1-jre'
 
+    //Slack api
+    implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.16.0'
+
     // Charting api/runtime
     implementation group: 'org.jfree', name: 'jfreechart', version: '1.0.17'
 // persistence API

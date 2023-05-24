@@ -1,15 +1,23 @@
 package edu.touro.mco152.bm.Commands;
 
 import edu.touro.mco152.bm.*;
+import edu.touro.mco152.bm.observers.Observable;
+import edu.touro.mco152.bm.observers.Observer;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.ui.Gui;
 import jakarta.persistence.EntityManager;
 
+import javax.swing.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static edu.touro.mco152.bm.App.*;
 import static edu.touro.mco152.bm.App.msg;
@@ -17,8 +25,10 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.READ;
 /**
  * This class is a command as it implements the Command Interface, and it does the Read part of the Benchmark process
  * using the data passed into the constructor
+ * It also implements the Observable interface, so it registers and notifies observers as necessary
  */
-public class ReadCmd implements CommandInterface {
+public class ReadCmd implements CommandInterface, Observable {
+    private List<Observer> observers = new ArrayList<>();
     private int numOfBlocks;
     private int numOfMarks;
     PersonalDataLog myDataLogger = new PersonalDataLog();
@@ -34,6 +44,7 @@ public class ReadCmd implements CommandInterface {
     private byte[] blockArr;
     private DiskMark rMark;
     private int startFileNum;
+    private DiskRun run;
 
     public ReadCmd(UIInterface<DiskMark, Boolean> ui, int numOFMarks, int numOfBlocks, int blockSizeKb, DiskRun.BlockSequence sequence) {
         this.numOfMarks = numOFMarks;
@@ -73,7 +84,7 @@ public class ReadCmd implements CommandInterface {
         myDataLogger.addToAppInfo(targetTxSizeKb());
         myDataLogger.setUtilDiskInfoFile(Util.getDiskInfo(dataDir));
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.READ, this.blockSequence);
+        run = new DiskRun(DiskRun.IOMode.READ, this.blockSequence);
         run.setNumMarks(this.numOfMarks);
         run.setNumBlocks(this.numOfBlocks);
         run.setBlockSize(this.blockSizeKb);
@@ -119,8 +130,15 @@ public class ReadCmd implements CommandInterface {
                     percentComplete = (float) unitsComplete / (float) unitsTotal * 100f;
                     ui.updateProgress((int) percentComplete);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+                String emsg = "May not have done Write Benchmarks, so no data available to read." +
+                        ex.getMessage();
+                JOptionPane.showMessageDialog(Gui.mainFrame, emsg, "Unable to READ", JOptionPane.ERROR_MESSAGE);
+                msg(emsg);
+                return false;
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
             long endTime = System.nanoTime();
             long elapsedTimeNs = endTime - startTime;
@@ -139,15 +157,26 @@ public class ReadCmd implements CommandInterface {
             myDataLogger.setRun(run);
         }
 
-            /*
-              Persist info about the Read BM Run (e.g. into Derby Database) and add it to a GUI panel
-             */
-        EntityManager em = EM.getEntityManager();
-        em.getTransaction().begin();
-        em.persist(run);
-        em.getTransaction().commit();
+        notifyObservers();
 
-        Gui.runPanel.addRun(run);
         return true;
+    }
+
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer: observers){
+            observer.update(run);
+        }
     }
 }

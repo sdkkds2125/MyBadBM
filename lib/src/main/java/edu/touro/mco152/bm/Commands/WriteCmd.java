@@ -1,6 +1,8 @@
 package edu.touro.mco152.bm.Commands;
 
 import edu.touro.mco152.bm.*;
+import edu.touro.mco152.bm.observers.Observable;
+import edu.touro.mco152.bm.observers.Observer;
 import edu.touro.mco152.bm.persist.DiskRun;
 import edu.touro.mco152.bm.persist.EM;
 import edu.touro.mco152.bm.ui.Gui;
@@ -9,7 +11,9 @@ import jakarta.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +25,8 @@ import static edu.touro.mco152.bm.DiskMark.MarkType.WRITE;
  * This class is a command as it implements the Command Interface, and it does the write part of the Benchmark process
  * using the data passed into the constructor
  */
-public class WriteCmd implements CommandInterface {
+public class WriteCmd implements CommandInterface, Observable {
+    private List<Observer> observers = new ArrayList<>();
     private int numOfBlocks;
     private int numOfMarks;
     PersonalDataLog myDataLogger = new PersonalDataLog();
@@ -37,14 +42,14 @@ public class WriteCmd implements CommandInterface {
     private byte[] blockArr;
     private DiskMark wMark;
     private int startFileNum;
+    private DiskRun run;
 
     /**
-     *
-     * @param ui - the instance of the UIInterface that you are using to run the benchmark
-     * @param numOFMarks - the number of Marks wanted
+     * @param ui          - the instance of the UIInterface that you are using to run the benchmark
+     * @param numOFMarks  - the number of Marks wanted
      * @param numOfBlocks - desired number of blocks
      * @param blockSizeKb - the size of each block in kbs
-     * @param sequence - how
+     * @param sequence    - how
      */
     public WriteCmd(UIInterface<DiskMark, Boolean> ui, int numOFMarks, int numOfBlocks, int blockSizeKb, DiskRun.BlockSequence sequence) {
         this.numOfMarks = numOFMarks;
@@ -65,9 +70,11 @@ public class WriteCmd implements CommandInterface {
         startFileNum = App.nextMarkNumber;
     }
 
-    /** Made this method as a duplicate of the one in App in order to not have to call that one to ensure
+    /**
+     * Made this method as a duplicate of the one in App in order to not have to call that one to ensure
      * the use of the variables of this file not App's
-      * @return long
+     *
+     * @return long
      */
     public long targetTxSizeKb() {
         return (long) blockSizeKb * numOfBlocks * numOfMarks;
@@ -82,7 +89,7 @@ public class WriteCmd implements CommandInterface {
         myDataLogger.addToAppInfo(targetTxSizeKb());
         myDataLogger.setUtilDiskInfoFile(Util.getDiskInfo(dataDir));
 
-        DiskRun run = new DiskRun(DiskRun.IOMode.WRITE, this.blockSequence);
+        run = new DiskRun(DiskRun.IOMode.WRITE, this.blockSequence);
         run.setNumMarks(this.numOfMarks);
         run.setNumBlocks(this.numOfBlocks);
         run.setBlockSize(this.blockSizeKb);
@@ -181,17 +188,25 @@ public class WriteCmd implements CommandInterface {
             myDataLogger.setRun(run);
         } // END outer loop for specified duration (number of 'marks') for WRITE benchmark
 
-            /*
-              Persist info about the Write BM Run (e.g. into Derby Database) and add it to a GUI panel
-             */
-        EntityManager em = EM.getEntityManager();
-        em.getTransaction().begin();
-        em.persist(run);
-        em.getTransaction().commit();
-
-        Gui.runPanel.addRun(run);
+        notifyObservers();
         return true;
     }
 
 
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer observer : observers) {
+            observer.update(run);
+        }
+    }
 }

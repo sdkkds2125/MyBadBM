@@ -3,26 +3,15 @@ package edu.touro.mco152.bm;
 import edu.touro.mco152.bm.Commands.Executor;
 import edu.touro.mco152.bm.Commands.ReadCmd;
 import edu.touro.mco152.bm.Commands.WriteCmd;
-import edu.touro.mco152.bm.persist.DiskRun;
-import edu.touro.mco152.bm.persist.EM;
+import edu.touro.mco152.bm.persist.DatabasePersisterObserver;
 import edu.touro.mco152.bm.ui.Gui;
 
-import jakarta.persistence.EntityManager;
-
 import javax.swing.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static edu.touro.mco152.bm.App.*;
-import static edu.touro.mco152.bm.DiskMark.MarkType.READ;
-import static edu.touro.mco152.bm.DiskMark.MarkType.WRITE;
 
 /**
  * Run the disk benchmarking with any UI that implements the UIInterface for example in swing:
@@ -81,7 +70,9 @@ public class DiskWorker {
           The GUI allows a Write, Read, or both types of BMs to be started. They are done serially.
          */
                 if (App.writeTest) {
-                    executor.executeCommand(new WriteCmd(ui, numOfMarks, numOfBlocks, blockSizeKb, blockSequence));
+                    WriteCmd cmd = new WriteCmd(ui, numOfMarks, numOfBlocks, blockSizeKb, blockSequence);
+                    executor.executeCommand(cmd);
+                    addWriteObservers(cmd);
                 }
 
         /*
@@ -110,6 +101,16 @@ public class DiskWorker {
                 return true;
             }
         });
+    }
+
+    private void addWriteObservers(WriteCmd cmd){
+        cmd.registerObserver(new DatabasePersisterObserver());
+        cmd.registerObserver(new Gui());
+    }
+
+    private void addReadObservers(ReadCmd cmd){
+        cmd.registerObserver(new DatabasePersisterObserver());
+        cmd.registerObserver(new Gui());
     }
 
     public void setUi(UIInterface ui) {
